@@ -1,0 +1,32 @@
+title: "Архитектура сервиса"
+nodes:
+  api:
+    text: "API Gateway"
+    style: blue
+    shape: rectangle
+  auth:
+    text: "Auth"
+    style: red
+    shape: diamond
+  db:
+    text: "PostgreSQL"
+    style: green
+    size: large
+  cache:
+    text: "Redis Cache"
+    style: orange
+    size: small
+  worker:
+    text: "Background\nWorker"
+    style: purple
+edges:
+  - [api, auth]
+  - [auth, db]
+  - [api, cache, {label: "read"}]
+  - [api, worker, {label: "async"}]
+side:
+  - {from: worker, to: notifications, text: "Email/SMS", color: gray}
+notes:
+  - "Все запросы проходят через API Gateway"
+  - "Auth проверяет JWT токен"
+  - "Worker обрабатывает фоновые задачи"

@@ -1,0 +1,14 @@
+title: "Простой процесс"
+nodes:
+  start:
+    text: "Начало"
+    style: green
+  process:
+    text: "Обработка"
+    style: blue
+  end:
+    text: "Готово"
+    style: yellow
+edges:
+  - [start, process]
+  - [process, end]
