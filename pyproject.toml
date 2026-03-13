@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "excalidraw-cli"
+version = "1.0.0"
+description = "CLI для управления Excalidraw-канвасом — для людей и AI-агентов"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+    "click>=8.0.0",
+    "pyyaml>=6.0",
+]
+keywords = ["excalidraw", "cli", "diagrams", "ai-agents", "claude-code"]
+
+[project.urls]
+Repository = "https://github.com/USER/excalidraw-cli"
+
+[project.scripts]
+excli = "excli.cli:main"
