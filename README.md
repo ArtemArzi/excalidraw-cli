@@ -32,13 +32,13 @@ docker run -d -p 3000:3000 --name excalidraw-canvas ghcr.io/yctimlin/mcp_excalid
 ### 2. Установи excli
 
 ```bash
-pip install git+https://github.com/USER/excalidraw-cli.git
+pip install git+https://github.com/ArtemArzi/excalidraw-cli.git
 ```
 
 Или локально:
 
 ```bash
-git clone https://github.com/USER/excalidraw-cli.git
+git clone https://github.com/ArtemArzi/excalidraw-cli.git
 cd excalidraw-cli
 pip install -e .
 ```

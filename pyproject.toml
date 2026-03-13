@@ -15,7 +15,7 @@ dependencies = [
 keywords = ["excalidraw", "cli", "diagrams", "ai-agents", "claude-code"]
 
 [project.urls]
-Repository = "https://github.com/USER/excalidraw-cli"
+Repository = "https://github.com/ArtemArzi/excalidraw-cli"
 
 [project.scripts]
 excli = "excli.cli:main"
