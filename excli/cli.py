@@ -17,7 +17,7 @@ import sys
 import click
 
 from excli import backend as api
-from excli.elements import make_box, make_arrow, make_text
+from excli.elements import make_box, make_arrow, make_text, THEMES, set_theme, list_themes
 from excli.flow import build_flow_from_text, PALETTES
 
 
@@ -58,13 +58,44 @@ def _parse_coords(value: str) -> tuple[float, float]:
 
 @click.group(invoke_without_command=True)
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON for agents")
+@click.option("--theme", "theme_name", default=None,
+              type=click.Choice(list(THEMES.keys())),
+              help="Visual theme for created elements")
 @click.pass_context
-def cli(ctx, as_json):
+def cli(ctx, as_json, theme_name):
     """excli — Excalidraw CLI for AI agents and humans."""
     ctx.ensure_object(dict)
     ctx.obj["json"] = as_json
+    if theme_name:
+        set_theme(theme_name)
     if ctx.invoked_subcommand is None:
         click.echo(cli.get_help(ctx))
+
+
+# ── theme ──────────────────────────────────────────────
+
+THEME_DESCRIPTIONS = {
+    "default":    "Helvetica, hand-drawn, solid fill — стандартный",
+    "sketch":     "Virgil (рукописный шрифт), грубые линии, штриховка",
+    "clean":      "Гладкие линии, скруглённые углы, solid fill",
+    "bold":       "Толстые линии, скруглённые углы, акцент",
+    "minimal":    "Тонкие линии, чистый минимализм",
+    "blueprint":  "Моноширинный шрифт, cross-hatch, технический чертёж",
+    "whiteboard": "Virgil, hand-drawn, как на доске",
+    "dots":       "Точечная заливка, гладкие линии",
+    "dashed":     "Пунктирные линии, штриховка",
+}
+
+
+@cli.command("theme")
+@click.pass_context
+def theme_cmd(ctx):
+    """List available visual themes."""
+    click.echo("Available themes (use with --theme):\n")
+    for name in list_themes():
+        desc = THEME_DESCRIPTIONS.get(name, "")
+        click.echo(f"  {name:12s}  {desc}")
+    click.echo(f"\nUsage: excli --theme sketch flow \"A -> B -> C\"")
 
 
 # ── render ─────────────────────────────────────────────

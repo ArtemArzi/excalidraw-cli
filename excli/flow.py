@@ -15,7 +15,7 @@ Notation with newlines (vertical):
 from excli.backend import batch_create, clear_canvas
 from excli.elements import (
     DEFAULT_BOX_W, DEFAULT_BOX_H, DEFAULT_PADDING, DEFAULT_FONT_SIZE,
-    DEFAULT_FONT_FAMILY, _center_text_in_box,
+    DEFAULT_FONT_FAMILY, _center_text_in_box, _apply_theme,
 )
 
 # ── Color palettes ──────────────────────────────────────
@@ -101,7 +101,7 @@ def build_flow(
 
         bg = colors[i % len(colors)]
 
-        elements.append({
+        elements.append(_apply_theme({
             "id": bid,
             "type": "rectangle",
             "x": bx,
@@ -110,24 +110,22 @@ def build_flow(
             "height": box_h,
             "backgroundColor": bg,
             "strokeColor": stroke,
-            "roughness": 1,
-        })
+        }))
         tx, ty = _center_text_in_box(bx, by, box_w, box_h, step, DEFAULT_FONT_SIZE)
-        elements.append({
+        elements.append(_apply_theme({
             "id": tid,
             "type": "text",
             "x": tx,
             "y": ty,
             "text": step,
             "fontSize": DEFAULT_FONT_SIZE,
-            "fontFamily": DEFAULT_FONT_FAMILY,
             "strokeColor": stroke,
             "textAlign": "center",
-        })
+        }))
 
     # Arrows between consecutive boxes
     for i in range(len(box_ids) - 1):
-        elements.append({
+        elements.append(_apply_theme({
             "id": _make_id("arr"),
             "type": "arrow",
             "x": 0,
@@ -136,7 +134,7 @@ def build_flow(
             "start": {"id": box_ids[i]},
             "end": {"id": box_ids[i + 1]},
             "endArrowhead": "arrow",
-        })
+        }))
 
     return batch_create(elements)
 

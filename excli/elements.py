@@ -26,6 +26,128 @@ _LINE_HEIGHT_FACTOR = 1.35  # line height at fontSize=1
 _TEXT_PADDING = 20           # min padding inside shape
 
 
+# ── Themes ─────────────────────────────────────────────
+# Each theme is a dict of Excalidraw element properties.
+# Properties are merged into elements at creation time.
+
+THEMES: dict[str, dict] = {
+    "default": {
+        # Current behavior — Helvetica, hand-drawn, solid fill
+        "roughness": 1,
+        "fontFamily": 2,
+        "fillStyle": "solid",
+        "strokeWidth": 2,
+        "strokeStyle": "solid",
+        "roundness": None,
+    },
+    "sketch": {
+        # Classic Excalidraw hand-drawn look
+        "roughness": 2,
+        "fontFamily": 1,  # Virgil (hand-drawn font)
+        "fillStyle": "hachure",
+        "strokeWidth": 2,
+        "strokeStyle": "solid",
+        "roundness": None,
+    },
+    "clean": {
+        # Polished, modern — no roughness, rounded corners
+        "roughness": 0,
+        "fontFamily": 2,  # Helvetica
+        "fillStyle": "solid",
+        "strokeWidth": 2,
+        "strokeStyle": "solid",
+        "roundness": {"type": 3},
+    },
+    "bold": {
+        # Heavy strokes, solid, no roughness
+        "roughness": 0,
+        "fontFamily": 2,
+        "fillStyle": "solid",
+        "strokeWidth": 4,
+        "strokeStyle": "solid",
+        "roundness": {"type": 3},
+    },
+    "minimal": {
+        # Thin lines, clean, no fill
+        "roughness": 0,
+        "fontFamily": 2,
+        "fillStyle": "solid",
+        "strokeWidth": 1,
+        "strokeStyle": "solid",
+        "roundness": {"type": 3},
+    },
+    "blueprint": {
+        # Technical drawing — monospace font, dashed
+        "roughness": 0,
+        "fontFamily": 3,  # Cascadia (monospace)
+        "fillStyle": "cross-hatch",
+        "strokeWidth": 1,
+        "strokeStyle": "solid",
+        "roundness": None,
+    },
+    "whiteboard": {
+        # Casual whiteboard — hand-drawn, bold
+        "roughness": 1,
+        "fontFamily": 1,  # Virgil
+        "fillStyle": "solid",
+        "strokeWidth": 2,
+        "strokeStyle": "solid",
+        "roundness": None,
+    },
+    "dots": {
+        # Dotted fill, clean lines
+        "roughness": 0,
+        "fontFamily": 2,
+        "fillStyle": "dots",
+        "strokeWidth": 2,
+        "strokeStyle": "solid",
+        "roundness": {"type": 3},
+    },
+    "dashed": {
+        # Dashed strokes, hachure fill
+        "roughness": 1,
+        "fontFamily": 2,
+        "fillStyle": "hachure",
+        "strokeWidth": 2,
+        "strokeStyle": "dashed",
+        "roundness": None,
+    },
+}
+
+# Active theme — set via set_theme() or --theme flag
+_active_theme: dict = THEMES["default"].copy()
+
+
+def get_theme() -> dict:
+    """Return the currently active theme properties."""
+    return _active_theme
+
+
+def set_theme(name: str) -> None:
+    """Set the active theme by name. Raises KeyError if unknown."""
+    if name not in THEMES:
+        available = ", ".join(THEMES.keys())
+        raise KeyError(f"Unknown theme '{name}'. Available: {available}")
+    _active_theme.clear()
+    _active_theme.update(THEMES[name])
+
+
+def list_themes() -> list[str]:
+    """Return list of available theme names."""
+    return list(THEMES.keys())
+
+
+def _apply_theme(el: dict) -> dict:
+    """Apply active theme properties to an element dict."""
+    theme = get_theme()
+    for key, value in theme.items():
+        if key == "fontFamily" and el.get("type") != "text":
+            continue  # fontFamily only applies to text
+        if key not in el:  # don't override explicit values
+            el[key] = value
+    return el
+
+
 def _make_id(prefix: str = "el") -> str:
     import time, random
     return f"{prefix}_{int(time.time() * 1000) % 100000}_{random.randint(100, 999)}"
@@ -103,7 +225,7 @@ def make_box(
 
     tx, ty = _center_text_in_box(x, y, w, h, text, font_size, shape=shape)
 
-    box_el = {
+    box_el = _apply_theme({
         "id": bid,
         "type": shape,
         "x": x,
@@ -112,19 +234,17 @@ def make_box(
         "height": h,
         "backgroundColor": bg,
         "strokeColor": stroke,
-        "roughness": 1,
-    }
-    text_el = {
+    })
+    text_el = _apply_theme({
         "id": tid,
         "type": "text",
         "x": tx,
         "y": ty,
         "text": text,
         "fontSize": font_size,
-        "fontFamily": DEFAULT_FONT_FAMILY,
         "strokeColor": stroke,
         "textAlign": "center",
-    }
+    })
 
     return batch_create([box_el, text_el])
 
@@ -155,7 +275,7 @@ def box_elements(
 
     tx, ty = _center_text_in_box(x, y, w, h, text, font_size, shape=shape)
 
-    box_el = {
+    box_el = _apply_theme({
         "id": bid,
         "type": shape,
         "x": x,
@@ -164,19 +284,17 @@ def box_elements(
         "height": h,
         "backgroundColor": bg,
         "strokeColor": stroke,
-        "roughness": 1,
-    }
-    text_el = {
+    })
+    text_el = _apply_theme({
         "id": tid,
         "type": "text",
         "x": tx,
         "y": ty,
         "text": text,
         "fontSize": font_size,
-        "fontFamily": DEFAULT_FONT_FAMILY,
         "strokeColor": stroke,
         "textAlign": "center",
-    }
+    })
 
     return box_el, text_el, w, h
 
@@ -190,7 +308,7 @@ def make_arrow(
     stroke: str = DEFAULT_STROKE,
 ) -> list[dict]:
     """Create an arrow connecting two elements by ID."""
-    arrow_el: dict = {
+    arrow_el = _apply_theme({
         "id": _make_id("arr"),
         "type": "arrow",
         "x": 0,
@@ -199,20 +317,19 @@ def make_arrow(
         "start": {"id": from_id},
         "end": {"id": to_id},
         "endArrowhead": "arrow",
-    }
+    })
     elements = [arrow_el]
 
     if label:
-        elements.append({
+        elements.append(_apply_theme({
             "id": _make_id("albl"),
             "type": "text",
             "x": 0,
             "y": 0,
             "text": label,
             "fontSize": 16,
-            "fontFamily": DEFAULT_FONT_FAMILY,
             "strokeColor": stroke,
-        })
+        }))
 
     return batch_create(elements)
 
@@ -225,7 +342,7 @@ def arrow_element(
     arrow_id: str | None = None,
 ) -> dict:
     """Return a raw arrow dict without calling the API."""
-    return {
+    return _apply_theme({
         "id": arrow_id or _make_id("arr"),
         "type": "arrow",
         "x": 0,
@@ -235,7 +352,7 @@ def arrow_element(
         "start": {"id": from_id},
         "end": {"id": to_id},
         "endArrowhead": "arrow",
-    }
+    })
 
 
 # ── Text ────────────────────────────────────────────────
@@ -248,12 +365,11 @@ def make_text(
     color: str = DEFAULT_STROKE,
 ) -> dict:
     """Create a standalone text element."""
-    return create_element({
+    return create_element(_apply_theme({
         "type": "text",
         "x": x,
         "y": y,
         "text": text,
         "fontSize": size,
-        "fontFamily": DEFAULT_FONT_FAMILY,
         "strokeColor": color,
-    })
+    }))
