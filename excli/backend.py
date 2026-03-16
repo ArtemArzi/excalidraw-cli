@@ -136,6 +136,34 @@ def snapshot_restore(name: str) -> dict:
     })
 
 
+# ── Batch update ───────────────────────────────────────
+
+def batch_update(updates: list[dict]) -> list[dict]:
+    """Update multiple elements at once.
+
+    Each item: {"id": "...", ...props_to_update}.
+    Falls back to sequential updates if batch endpoint doesn't exist.
+    """
+    results = []
+    for item in updates:
+        eid = item.pop("id", None)
+        if eid and item:
+            results.append(update_element(eid, item))
+    return results
+
+
+# ── Group / Ungroup ────────────────────────────────────
+
+def group_elements(element_ids: list[str]) -> dict:
+    """Group elements together."""
+    return _request("POST", "/api/elements/group", data={"elementIds": element_ids})
+
+
+def ungroup_elements(group_id: str) -> dict:
+    """Ungroup a group of elements."""
+    return _request("POST", "/api/elements/ungroup", data={"groupId": group_id})
+
+
 # ── Viewport ────────────────────────────────────────────
 
 def set_viewport(scroll_to_content: bool = False, zoom: float | None = None) -> dict:
@@ -145,3 +173,40 @@ def set_viewport(scroll_to_content: bool = False, zoom: float | None = None) -> 
     if zoom is not None:
         payload["zoom"] = zoom
     return _request("POST", "/api/viewport", data=payload)
+
+
+# ── Align / Distribute / Duplicate / Lock ──────────────
+
+def align_elements(element_ids: list[str], alignment: str) -> dict:
+    """Align elements (left|center|right|top|middle|bottom)."""
+    return _request("POST", "/api/elements/align", data={
+        "elementIds": element_ids,
+        "alignment": alignment,
+    })
+
+
+def distribute_elements(element_ids: list[str], axis: str) -> dict:
+    """Distribute elements evenly (horizontal|vertical)."""
+    return _request("POST", "/api/elements/distribute", data={
+        "elementIds": element_ids,
+        "axis": axis,
+    })
+
+
+def duplicate_elements(element_ids: list[str], offset_x: float = 40, offset_y: float = 40) -> list[dict]:
+    """Duplicate elements with offset."""
+    resp = _request("POST", "/api/elements/duplicate", data={
+        "elementIds": element_ids,
+        "offset": {"x": offset_x, "y": offset_y},
+    })
+    return resp.get("elements", [])
+
+
+def lock_elements(element_ids: list[str]) -> dict:
+    """Lock elements to prevent editing."""
+    return _request("POST", "/api/elements/lock", data={"elementIds": element_ids})
+
+
+def unlock_elements(element_ids: list[str]) -> dict:
+    """Unlock elements."""
+    return _request("POST", "/api/elements/unlock", data={"elementIds": element_ids})

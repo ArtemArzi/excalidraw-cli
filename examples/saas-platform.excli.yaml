@@ -1,0 +1,163 @@
+title: "SaaS Platform — Full Architecture"
+layout: manual
+
+style:
+  roughness: 0
+  fillStyle: solid
+  fontFamily: helvetica
+  strokeWidth: 1
+
+sections:
+  clients:
+    title: "① Clients & Channels"
+    color: "#e7f5ff"
+    border: "#339af0"
+    padding: 20
+    opacity: 30
+    nodes: [browser, mobile, api_client, webhook_in]
+  edge:
+    title: "② Edge Layer"
+    color: "#fff9db"
+    border: "#f59f00"
+    padding: 20
+    opacity: 30
+    nodes: [cdn, lb, waf, apigw]
+  services:
+    title: "③ Application Services"
+    color: "#ebfbee"
+    border: "#40c057"
+    padding: 25
+    opacity: 30
+    nodes: [auth_svc, user_svc, billing_svc, product_svc, order_svc, search_svc, notify_svc, file_svc]
+  async:
+    title: "④ Async & Events"
+    color: "#f3f0ff"
+    border: "#7950f2"
+    padding: 20
+    opacity: 30
+    nodes: [kafka, worker_email, worker_analytics, worker_webhook, cron]
+  data:
+    title: "⑤ Data Layer"
+    color: "#fff0f6"
+    border: "#e64980"
+    padding: 20
+    opacity: 30
+    nodes: [pg_primary, pg_replica, redis, elastic, s3_files]
+  observe:
+    title: "⑥ Observability"
+    color: "#f8f9fa"
+    border: "#868e96"
+    padding: 20
+    opacity: 30
+    nodes: [prometheus, grafana, loki, sentry, pagerduty]
+
+nodes:
+  # ── Clients (y=80) ──
+  browser:      {text: "Web App\n(React)",        style: blue,   x: 80,   y: 80,  w: 160, h: 60}
+  mobile:       {text: "Mobile App\n(Flutter)",    style: blue,   x: 280,  y: 80,  w: 160, h: 60}
+  api_client:   {text: "3rd Party\nAPI Clients",   style: cyan,   x: 480,  y: 80,  w: 160, h: 60}
+  webhook_in:   {text: "Incoming\nWebhooks",       style: cyan,   x: 680,  y: 80,  w: 160, h: 60, shape: diamond}
+
+  # ── Edge (y=240) ──
+  cdn:          {text: "CDN\n(CloudFlare)",        style: yellow, x: 80,   y: 240, w: 140, h: 55}
+  lb:           {text: "Load Balancer\n(nginx)",   style: yellow, x: 260,  y: 240, w: 170, h: 55}
+  waf:          {text: "WAF",                      style: orange, x: 470,  y: 240, w: 100, h: 55, shape: ellipse}
+  apigw:        {text: "API Gateway\n(Kong)",      style: orange, x: 610,  y: 230, w: 200, h: 75, shape: diamond}
+
+  # ── Services (y=410, y=530) ──
+  auth_svc:     {text: "Auth\nService",            style: green,  x: 60,   y: 410, w: 140, h: 60}
+  user_svc:     {text: "User\nService",            style: green,  x: 230,  y: 410, w: 140, h: 60}
+  billing_svc:  {text: "Billing\nService",         style: mint,   x: 400,  y: 410, w: 140, h: 60}
+  product_svc:  {text: "Product\nCatalog",         style: green,  x: 570,  y: 410, w: 140, h: 60}
+  order_svc:    {text: "Order\nService",           style: lime,   x: 140,  y: 530, w: 140, h: 60}
+  search_svc:   {text: "Search\nService",          style: green,  x: 320,  y: 530, w: 140, h: 60}
+  notify_svc:   {text: "Notification\nService",    style: mint,   x: 500,  y: 530, w: 150, h: 60}
+  file_svc:     {text: "File\nService",            style: green,  x: 690,  y: 530, w: 130, h: 60}
+
+  # ── Async (y=700) ──
+  kafka:        {text: "Kafka",                    style: purple, x: 80,   y: 700, w: 130, h: 55, shape: ellipse}
+  worker_email: {text: "Worker:\nEmail",           style: violet, x: 260,  y: 700, w: 130, h: 55}
+  worker_analytics: {text: "Worker:\nAnalytics",   style: violet, x: 420,  y: 700, w: 140, h: 55}
+  worker_webhook: {text: "Worker:\nWebhook Out",   style: violet, x: 590,  y: 700, w: 150, h: 55}
+  cron:         {text: "Cron\nScheduler",          style: purple, x: 770,  y: 700, w: 130, h: 55}
+
+  # ── Data (y=870) ──
+  pg_primary:   {text: "PostgreSQL\n(primary)",    style: pink,   x: 80,   y: 870, w: 160, h: 60, shape: ellipse}
+  pg_replica:   {text: "PostgreSQL\n(read replica)", style: pink, x: 280,  y: 870, w: 175, h: 60, shape: ellipse}
+  redis:        {text: "Redis\nCluster",           style: red,    x: 490,  y: 870, w: 130, h: 60, shape: ellipse}
+  elastic:      {text: "Elasticsearch",            style: orange, x: 650,  y: 870, w: 160, h: 55, shape: ellipse}
+  s3_files:     {text: "S3\nObject Store",         style: pink,   x: 840,  y: 870, w: 130, h: 60, shape: ellipse}
+
+  # ── Observability (y=1050) ──
+  prometheus:   {text: "Prometheus",               style: gray,   x: 80,   y: 1050, w: 140, h: 50}
+  grafana:      {text: "Grafana",                  style: gray,   x: 260,  y: 1050, w: 130, h: 50}
+  loki:         {text: "Loki\n(Logs)",             style: gray,   x: 430,  y: 1050, w: 120, h: 50}
+  sentry:       {text: "Sentry\n(Errors)",         style: gray,   x: 590,  y: 1050, w: 130, h: 50}
+  pagerduty:    {text: "PagerDuty\n(Alerts)",      style: gray,   x: 760,  y: 1050, w: 140, h: 50}
+
+edges:
+  # Clients → Edge
+  - [browser, cdn, {color: blue}]
+  - [browser, lb, {color: blue}]
+  - [mobile, lb, {color: blue}]
+  - [api_client, waf, {color: cyan}]
+  - [webhook_in, apigw, {color: cyan}]
+  - [cdn, lb, {color: gray, style: dashed}]
+  - [lb, waf, {color: orange}]
+  - [waf, apigw, {color: orange}]
+
+  # Edge → Services
+  - [apigw, auth_svc, {label: "JWT", color: green}]
+  - [apigw, user_svc, {color: green}]
+  - [apigw, billing_svc, {color: green}]
+  - [apigw, product_svc, {color: green}]
+  - [apigw, order_svc, {color: green, style: dashed}]
+
+  # Service-to-service
+  - [auth_svc, user_svc, {label: "lookup", color: green, style: dashed}]
+  - [order_svc, billing_svc, {label: "charge", color: blue}]
+  - [order_svc, product_svc, {label: "reserve", color: blue}]
+  - [order_svc, notify_svc, {label: "confirm", color: gray, style: dashed}]
+  - [search_svc, product_svc, {label: "index", color: gray, style: dashed}]
+  - [notify_svc, file_svc, {label: "attach", color: gray, style: dashed}]
+
+  # Services → Async
+  - [order_svc, kafka, {label: "events", color: purple}]
+  - [billing_svc, kafka, {label: "events", color: purple}]
+  - [notify_svc, kafka, {color: purple}]
+  - [kafka, worker_email, {color: purple}]
+  - [kafka, worker_analytics, {color: purple}]
+  - [kafka, worker_webhook, {color: purple}]
+  - [cron, kafka, {label: "triggers", color: purple, style: dashed}]
+
+  # Services → Data
+  - [auth_svc, pg_primary, {color: red}]
+  - [user_svc, pg_primary, {color: red}]
+  - [billing_svc, pg_primary, {color: red}]
+  - [order_svc, pg_primary, {color: red}]
+  - [product_svc, pg_primary, {color: red}]
+  - [search_svc, elastic, {color: orange}]
+  - [file_svc, s3_files, {color: red}]
+  - [pg_primary, pg_replica, {label: "replication", color: red, style: dashed}]
+
+  # Cache
+  - [user_svc, redis, {label: "session", color: red, style: dashed}]
+  - [product_svc, redis, {label: "cache", color: red, style: dashed}]
+  - [auth_svc, redis, {label: "tokens", color: red, style: dashed}]
+
+  # Analytics → Data
+  - [worker_analytics, pg_replica, {color: purple, style: dashed}]
+  - [worker_analytics, elastic, {color: orange, style: dashed}]
+
+  # Observability
+  - [prometheus, grafana, {color: gray}]
+  - [loki, grafana, {color: gray}]
+  - [sentry, pagerduty, {label: "alert", color: red}]
+  - [prometheus, pagerduty, {label: "alert", color: red, style: dashed}]
+
+notes:
+  - "Все сервисы — Docker containers, оркестрация K8s"
+  - "Kafka — event sourcing для order/billing/notify"
+  - "PostgreSQL primary-replica, Redis для сессий и кэша"
+  - "Zero-trust: WAF → API GW → JWT verify на каждый запрос"
+  - "Observability: metrics (Prometheus) + logs (Loki) + errors (Sentry) + alerts (PagerDuty)"
